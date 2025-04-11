@@ -30,7 +30,7 @@ dt = T / N
 sigma = 0.0
 tau_alpha = 1e-2
 tau_omega = 1e-1
-num_iters = 100000
+num_iters = 10000
 
 # Initial data
 x0 = torch.linspace(-1, 1, M)
