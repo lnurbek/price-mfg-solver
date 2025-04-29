@@ -17,53 +17,6 @@ def compute_trajectories(alpha: torch.Tensor, x0: torch.Tensor, dt: float) -> to
     z_full = torch.cat([x0.unsqueeze(1), x0.unsqueeze(1) + z_relative], dim=1)
     return z_full
 
-# def compute_first_term(omega: torch.Tensor, Q: torch.Tensor, sigma: float, dt: float) -> torch.Tensor:
-#     """
-#     Compute the first term of the objective:
-#     ∫ [σ * ω(t)^2 / 2 + ω(t) * Q(t)] dt using left endpoint rule.
-
-#     Args:
-#         omega: (N,) tensor of price values
-#         Q: (N,) tensor of supply values
-#         sigma: float scalar
-#         dt: float timestep size
-
-#     Returns:
-#         Scalar tensor representing the discretized integral
-#     """
-#     integrand = 0.5 * sigma * omega**2 + omega * Q
-#     return dt * torch.sum(integrand)
-
-# def compute_second_term(
-#     alpha: torch.Tensor,
-#     omega: torch.Tensor,
-#     x0: torch.Tensor,
-#     dt: float,
-#     L: callable,
-#     g: callable
-# ) -> torch.Tensor:
-#     """
-#     Compute the second term of the objective (mean over agents).
-
-#     Args:
-#         alpha: (M, N) control tensor
-#         omega: (N,) price trajectory
-#         x0: (M,) initial sample positions
-#         dt: timestep size
-#         L: function L(z, a) → cost at each point (M, N)
-#         g: function g(z_T) → terminal cost (M,)
-
-#     Returns:
-#         Scalar tensor
-#     """
-#     z = compute_trajectories(alpha, x0, dt)           # (M, N+1)
-#     L_term = L(z[:, :-1], alpha)                      # (M, N)
-#     coupling = alpha * omega                          # (M, N), broadcast
-#     integrand = L_term + coupling                     # (M, N)
-#     integral = dt * torch.sum(integrand, dim=1)       # (M,)
-#     terminal = g(z[:, -1])                            # (M,)
-#     return torch.mean(integral + terminal)            # scalar
-
 def compute_objective(
     alpha: torch.Tensor,
     omega: torch.Tensor,
