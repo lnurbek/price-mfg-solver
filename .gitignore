@@ -4,3 +4,4 @@ __pycache__/
 *.pt
 *.log
 *.DS_Store
+autograd_test.py
