@@ -27,7 +27,7 @@ def g(z_T):
 
 
 # Problem setup
-M, N = 100, 100
+M, N = 100, 1000  # number of samples and time steps
 T = 1.0
 dt = T / N
 sigma = 0.0
