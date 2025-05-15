@@ -12,18 +12,23 @@ torch.manual_seed(0)
 
 # Cost function parameters
 c0 = 1.0    # control cost weight
-r1 = 10.0    # running potential strength
-r2 = 10.0    # terminal cost strength
+r1 = 0.0    # running potential strength
+r2 = 0.0    # terminal cost strength
+r3 = 0.0    # running double-well potential strength
+r4=50.0    # terminal double-well cost strength
 y1 = 0    # running potential center
 y2 = 0    # terminal cost target
-
+y3 = 0.25    # running double-well potential center
+y4 = 0.75    # terminal double-well cost target
+y5 = 0.25    # running double-well potential center
+y6 = 0.75    # terminal double-well cost target
 
 # Define test cost functions
 def L(z, a):
-    return 0.5 * c0 * a**2 + 0.5 * r1 * (z - y1)**2
+    return 0.5 * c0 * a**2 + 0.5 * r1 * (z - y1)**2+0.5 * r3 * (z - y3)**2 * (z - y4)**2 #-0.01*torch.log(z*(1-z))
 
 def g(z_T):
-    return 0.5 * r2 * (z_T - y2)**2
+    return 0.5 * r2 * (z_T - y2)**2+ 0.5 * r4 * (z_T - y5)**2 * (z_T - y6)**2
 
 
 # Problem setup
@@ -36,8 +41,9 @@ tau_omega = 1e-1
 num_iters = 10000
 
 # Initial data
-x0 = torch.linspace(-1, 1, M)
-Q = torch.sin(10*torch.linspace(0, T, N))
+x0 = torch.linspace(0, 1, M)
+Q = -torch.sin(10*torch.linspace(0, T, N))
+# Q=-0.0*torch.ones(N)
 
 alpha0 = torch.randn(M, N)
 omega0 = torch.zeros(N)
@@ -96,6 +102,7 @@ t_grid = torch.linspace(0, T * (N - 1) / N, N)
 plt.figure(figsize=(8, 5))
 plt.plot(t_grid, omega_final.detach(), label='Numerical ω', linewidth=2)
 plt.plot(t_grid, omega_analytic, label='Analytic ω*', linestyle='--', linewidth=2)
+plt.plot(t_grid, Q, label='Q', linestyle='--', linewidth=2)
 plt.xlabel("Time")
 plt.ylabel("Price ω")
 plt.title("Comparison of Numerical vs Analytic ω")
@@ -118,12 +125,12 @@ t_grid = torch.linspace(0, T, N + 1)
 # Plot a selection of trajectories
 
 # indices = torch.randperm(M)[:10]  # pick 10 random unique indices
-indices = range(0, M, 10)  # every 10th trajectory up to M
+indices = range(0, M, 5)  # every 10th trajectory up to M
 
 plt.figure(figsize=(10, 6))
 for m in indices:
     plt.plot(t_grid.detach().numpy(), z_numeric[m].detach().numpy(), label=f"Numerical z[{m}]", linewidth=2)
-    plt.plot(t_grid.detach().numpy(), z_analytic[m].detach().numpy(), '--', label=f"Analytic z*[{m}]", linewidth=2)
+    # plt.plot(t_grid.detach().numpy(), z_analytic[m].detach().numpy(), '--', label=f"Analytic z*[{m}]", linewidth=2)
 
 
 plt.xlabel("Time")
