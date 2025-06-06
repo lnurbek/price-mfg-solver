@@ -1,0 +1,7 @@
+README.md
+setup.py
+src/price_mfg_solver.egg-info/PKG-INFO
+src/price_mfg_solver.egg-info/SOURCES.txt
+src/price_mfg_solver.egg-info/dependency_links.txt
+src/price_mfg_solver.egg-info/requires.txt
+src/price_mfg_solver.egg-info/top_level.txt

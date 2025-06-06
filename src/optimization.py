@@ -6,7 +6,6 @@ def run_optimization(
     omega_init: torch.Tensor,
     x0: torch.Tensor,
     dt: float,
-    sigma: float,
     Q: torch.Tensor,
     L: callable,
     g: callable,
@@ -25,7 +24,7 @@ def run_optimization(
         alpha = alpha_prev.clone().detach().requires_grad_(True)
 
         # Step 2: Compute objective and gradient
-        loss = compute_objective(alpha, omega, x0, dt, sigma, Q, L, g)
+        loss = compute_objective(alpha, omega, x0, dt, Q, L, g)
         loss.backward()
         grad_alpha = alpha.grad.detach()
 
@@ -36,8 +35,7 @@ def run_optimization(
         alpha_bar = 2 * alpha_new - alpha_prev
 
         # Step 5: Dual update
-        omega = (1 / (tau_omega * sigma + 1)) * omega + \
-                (tau_omega / (tau_omega * sigma + 1)) * (alpha_bar.mean(dim=0) - Q)
+        omega = omega + tau_omega * (alpha_bar.mean(dim=0) - Q)
 
         # Step 6: Prepare for next iteration
         alpha_prev = alpha_new

@@ -22,7 +22,6 @@ def compute_objective(
     omega: torch.Tensor,
     x0: torch.Tensor,
     dt: float,
-    sigma: float,
     Q: torch.Tensor,
     L: callable,
     g: callable
@@ -44,7 +43,7 @@ def compute_objective(
         Scalar objective (torch.Tensor)
     """
     # First term: regularization and supply
-    obj1 = dt * torch.sum(0.5 * sigma * omega**2 + omega * Q)
+    obj1 = dt * torch.sum(omega * Q)
 
     # Second term: agent trajectories + expected cost
     z = compute_trajectories(alpha, x0, dt)          # (M, N+1)
