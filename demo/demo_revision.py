@@ -51,11 +51,11 @@ def run_experiments(cfg, seed=None):
 
     # --- Save results ---
 
-    caller_dir = # change to your own directory
+    caller_dir = os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)) # change to your own directory
 
     # Define results and plots folders relative to caller
-    results_path = os.path.join(caller_dir, "results")
-    plots_path = os.path.join(caller_dir, "plots")
+    results_path = os.path.join(caller_dir, "results_revision")
+    plots_path = os.path.join(caller_dir, "plots_revision")
 
     # Create them
     os.makedirs(results_path, exist_ok=True)
@@ -100,11 +100,11 @@ def run_experiments(cfg, seed=None):
     # Plot ω(t)
     t_grid = 0+dt*torch.arange(N)
     plt.figure(figsize=(8, 5))
-    plt.plot(t_grid, omega_final.detach(), label='Numerical ω', linewidth=3.5, linestyle = '--', color = 'black') #5.25 for case1/2
-    plt.plot(t_grid, Q, label='Supply Q', linewidth=2.3, linestyle = ':', color = 'green')
-    plt.plot(t_grid, omega_final.detach() + c0 * Q, label='ω + c0 * Q', linestyle='-.', linewidth=2, color = 'blue') #1.75 for case1/2
+    plt.plot(t_grid, omega_final.detach(), label='Numerical ω', linewidth=1, color = 'green') 
+    plt.plot(t_grid, Q, label='Supply Q', linewidth=1, linestyle = '-.', color = 'magenta')
+    plt.plot(t_grid, omega_final.detach() + c0 * Q, label='ω + c0 * Q', linestyle=':', linewidth=1, color = 'blue') 
     if analytic:
-        plt.plot(t_grid, omega_analytic, label='Analytic ω*', linewidth=1.68, color = 'red')
+        plt.plot(t_grid, omega_analytic, label='Analytic ω*', linewidth=3, linestyle='--', color = 'black')
         omega_error_analytic = torch.max(torch.abs(omega_final - omega_analytic)).item()
         print("L^infinity error between numerical and analytic ω:", omega_error_analytic)
         results['omega_diff_inf'] = omega_error_analytic
@@ -120,9 +120,9 @@ def run_experiments(cfg, seed=None):
     t_grid_full = torch.cat((t_grid,torch.tensor([T])))
     plt.figure(figsize=(8, 5))
     for m in range(0, M, 10):
-        plt.plot(t_grid_full.detach().numpy(), z_final[m].detach().numpy(), label=f"Numerical z[{m}]", linestyle = '--', linewidth=2, color = 'black') #4.75 for case1/2
+        plt.plot(t_grid_full.detach().numpy(), z_final[m].detach().numpy(), label=f"Numerical z[{m}]", linewidth=1, color = 'green') 
         if analytic:
-            plt.plot(t_grid_full.detach().numpy(), z_analytic[m].detach().numpy(), label=f"Analytic z[{m}]", linewidth=1.55, color = 'red')
+            plt.plot(t_grid_full.detach().numpy(), z_analytic[m].detach().numpy(), label=f"Analytic z[{m}]", linewidth=3, linestyle = '--', color = 'black')
     if analytic:
         z_error_analytic = torch.max(torch.abs(z_final - z_analytic)).item()
         print("L^infinity error between numerical and analytic trajectories:", z_error_analytic)
@@ -185,7 +185,8 @@ configs = [
 ]
 
 def main():
-    for cfg in configs[2:]: # Uncomment to run all configurations
+    # run_experiments(configs[1], SEED) # Select the configuration you want to run
+    for cfg in configs: # Uncomment to run all configurations
         run_experiments(cfg, SEED)
 
 if __name__ == '__main__':

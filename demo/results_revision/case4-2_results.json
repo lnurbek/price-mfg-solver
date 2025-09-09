@@ -17,7 +17,7 @@
   "final_objective": -0.22860082632764622,
   "grad_norm_alpha": 6.818039580963028e-18,
   "grad_norm_omega": 1.9523565677938847e-17,
-  "optimization_time_sec": 12.440720081329346,
+  "optimization_time_sec": 12.252469062805176,
   "random_seed": 0,
   "omega_final": [
     0.9983111280991372,
