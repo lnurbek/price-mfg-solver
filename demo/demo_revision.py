@@ -102,7 +102,7 @@ def run_experiments(cfg, seed=None):
     plt.figure(figsize=(8, 5))
     plt.plot(t_grid, omega_final.detach(), label='Numerical ω', linewidth=1, color = 'green') 
     plt.plot(t_grid, Q, label='Supply Q', linewidth=1, linestyle = '-.', color = 'magenta')
-    plt.plot(t_grid, omega_final.detach() + c0 * Q, label='ω + c0 * Q', linestyle=':', linewidth=1, color = 'blue') 
+    plt.plot(t_grid, omega_final.detach() + c0 * Q, label='ω + c0 * Q', linestyle=':', linewidth=2, color = 'blue') 
     if analytic:
         plt.plot(t_grid, omega_analytic, label='Analytic ω*', linewidth=3, linestyle='--', color = 'black')
         omega_error_analytic = torch.max(torch.abs(omega_final - omega_analytic)).item()
