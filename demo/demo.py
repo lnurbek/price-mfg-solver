@@ -51,11 +51,11 @@ def run_experiments(cfg, seed=None):
 
     # --- Save results ---
 
-    caller_dir = os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__))
+    caller_dir = os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)) # change to your own directory
 
     # Define results and plots folders relative to caller
-    results_path = os.path.join(caller_dir, "results")
-    plots_path = os.path.join(caller_dir, "plots")
+    results_path = os.path.join(caller_dir, "results_revision")
+    plots_path = os.path.join(caller_dir, "plots_revision")
 
     # Create them
     os.makedirs(results_path, exist_ok=True)
@@ -65,7 +65,7 @@ def run_experiments(cfg, seed=None):
 
     # Save a cleaned version of config (exclude the Q_func but keep the description)
     results['config'] = {k: v for k, v in cfg.items() if k != 'Q_func'}
-    
+
 
     print(f"Running {cfg['name']}")
     start_time = time.time()
@@ -85,7 +85,7 @@ def run_experiments(cfg, seed=None):
     print(f"Gradient norm (alpha): {torch.norm(grad_alpha):.6e}")
     print(f"Gradient norm (omega): {torch.norm(grad_omega):.6e}")
     print(f"Optimization took {time.time() - start_time:.3f} seconds")
-    
+
     # Save results
     results['final_objective'] = final_obj.item()
     results['grad_norm_alpha'] = torch.norm(grad_alpha).item()
@@ -96,14 +96,15 @@ def run_experiments(cfg, seed=None):
     # Retrieve analytic results if requested
     if analytic:
         omega_analytic, z_analytic = compute_analytic_solution(Q, x0, T, c0, r1, r2, y1, y2)
-    
+
     # Plot ω(t)
     t_grid = 0+dt*torch.arange(N)
     plt.figure(figsize=(8, 5))
-    plt.plot(t_grid, omega_final.detach(), label='Numerical ω', linewidth=2)
-    plt.plot(t_grid, Q, label='Supply Q', linewidth=1.25)
+    plt.plot(t_grid, omega_final.detach(), label='Numerical ω', linewidth=1, color = 'green') 
+    plt.plot(t_grid, Q, label='Supply Q', linewidth=1, linestyle = '-.', color = 'magenta')
+    plt.plot(t_grid, omega_final.detach() + c0 * Q, label='ω + c0 * Q', linestyle=':', linewidth=2, color = 'blue') 
     if analytic:
-        plt.plot(t_grid, omega_analytic, label='Analytic ω*', linestyle='--', linewidth=1)
+        plt.plot(t_grid, omega_analytic, label='Analytic ω*', linewidth=3, linestyle='--', color = 'black')
         omega_error_analytic = torch.max(torch.abs(omega_final - omega_analytic)).item()
         print("L^infinity error between numerical and analytic ω:", omega_error_analytic)
         results['omega_diff_inf'] = omega_error_analytic
@@ -119,16 +120,16 @@ def run_experiments(cfg, seed=None):
     t_grid_full = torch.cat((t_grid,torch.tensor([T])))
     plt.figure(figsize=(8, 5))
     for m in range(0, M, 10):
-        plt.plot(t_grid_full.detach().numpy(), z_final[m].detach().numpy(), label=f"Numerical z[{m}]", linewidth=2)
+        plt.plot(t_grid_full.detach().numpy(), z_final[m].detach().numpy(), label=f"Numerical z[{m}]", linewidth=1, color = 'green') 
         if analytic:
-            plt.plot(t_grid_full.detach().numpy(), z_analytic[m].detach().numpy(), label=f"Analytic z[{m}]", linestyle='--', linewidth=1)
+            plt.plot(t_grid_full.detach().numpy(), z_analytic[m].detach().numpy(), label=f"Analytic z[{m}]", linewidth=3, linestyle = '--', color = 'black')
     if analytic:
         z_error_analytic = torch.max(torch.abs(z_final - z_analytic)).item()
         print("L^infinity error between numerical and analytic trajectories:", z_error_analytic)
         results['z_diff_inf'] = z_error_analytic
     plt.xlabel("Time")
     plt.ylabel("State")
-    plt.legend(loc='upper left')
+    # plt.legend(loc='upper left')
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(os.path.join(plots_path, f"{cfg['name']}_z.png"))
@@ -139,7 +140,7 @@ def run_experiments(cfg, seed=None):
     if analytic:
         # Save analytic omega
         results['omega_analytic'] = omega_analytic.detach().cpu().numpy().tolist()
-    # Save results to JSON  
+    # Save results to JSON
     with open(os.path.join(results_path, f"{cfg['name']}_results.json"), "w") as f:
         json.dump(results, f, indent=2)
 
